@@ -17,15 +17,23 @@ export default function FormBooks({ addEditBook, id }) {
         }else{
             getBookPerID(id)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id])
 
     const getBookPerID = async bookId => {
-        const doc = await db.collection('books').doc(bookId).get()
-        setBook({...doc.data()})
+        try {
+            const doc = await db.collection('books').doc(bookId).get()
+            setBook({...doc.data()})
+        } catch (error) {
+            console.log(error)
+        }    
     }
 
     const handleSubmit = e => {
         e.preventDefault()
+        if (!book.author || !book.name || !book.isbn ) {
+            return false
+        }
         addEditBook(book)
         setBook(initialState)
     }
@@ -36,49 +44,53 @@ export default function FormBooks({ addEditBook, id }) {
     }
 
     return (
-        <form onSubmit={handleSubmit} autoComplete="off">
+        <div className="card mb-4">
 
-            <div className="input-group">
-                <input
-                type="text"
-                className="form-control"
-                name="name"
-                placeholder="Name"
-                onChange={ handleInputs }
-                value={ book.name }
-                />
-            </div>
-            
-            <div className="input-group">
-                <input
-                type="text"
-                className="form-control"
-                name="author"
-                placeholder="Author"
-                onChange={ handleInputs }
-                value={ book.author }
-                />
-            </div>
-            
-            <div className="input-group">
-                <input
-                type="text"
-                className="form-control"
-                name="isbn"
-                placeholder="ISBN"
-                onChange={ handleInputs }
-                value={ book.isbn }
-                />
-            </div>
-            
-            <div className="input-group">
-                <input
-                type="submit"
-                className="btn btn-primary btn-block"
-                value={ id === '' ? 'Save': 'Update' }
-                />
-            </div>
+            <form className="card-body" onSubmit={handleSubmit} autoComplete="off">
 
-        </form>
+                <div className="form-group">
+                    <input
+                    type="text"
+                    className="form-control"
+                    name="name"
+                    placeholder="Name"
+                    onChange={ handleInputs }
+                    value={ book.name }
+                    />
+                </div>
+
+                <div className="form-group">
+                    <input
+                    type="text"
+                    className="form-control"
+                    name="author"
+                    placeholder="Author"
+                    onChange={ handleInputs }
+                    value={ book.author }
+                    />
+                </div>
+
+                <div className="form-group">
+                    <input
+                    type="text"
+                    className="form-control"
+                    name="isbn"
+                    placeholder="ISBN"
+                    onChange={ handleInputs }
+                    value={ book.isbn }
+                    />
+                </div>
+
+                <div className="form-group">
+                    <input
+                    type="submit"
+                    className="btn btn-primary btn-block"
+                    value={ id === '' ? 'Save': 'Update' }
+                    />
+                </div>
+
+            </form>
+        </div>
+        
     )
 }

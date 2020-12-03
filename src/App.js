@@ -4,10 +4,10 @@ import 'react-toastify/dist/ReactToastify.css'
 
 function App() {
   return (
-    <>
+    <main className="container p-4">
     <ListBooks/>
     <ToastContainer/>
-    </>
+    </main>
   );
 }
 

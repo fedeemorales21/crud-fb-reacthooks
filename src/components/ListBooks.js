@@ -9,23 +9,29 @@ export default function ListBooks() {
     const [id, setId] = useState('')
 
     const addEditBook = async bookObject => {
-        if (id === '') {      
-            await db.collection('books').doc().set(bookObject)
-            toast('Book Added', {
-                type: 'success',
-                autoClose: 2000
-            })
-        }else{
-            await db.collection('books').doc(id).update(bookObject)
-            toast('Book Updated', {
-                type: 'info',
-                autoClose: 2000
-            })
-            setId('')
+        try {
+            
+            if (id === '') {      
+                await db.collection('books').doc().set(bookObject)
+                toast('Book Added', {
+                    type: 'success',
+                    autoClose: 2000
+                })
+            }else{
+                await db.collection('books').doc(id).update(bookObject)
+                toast('Book Updated', {
+                    type: 'info',
+                    autoClose: 2000
+                })
+                setId('')
+            }
+            
+        } catch (error) {
+            console.log(error)
         }
     }
 
-    const getBooks = async () => {
+    const getBooks = () => {
         db.collection('books').onSnapshot( qs => {
             const list = []
             qs.forEach(doc =>{
@@ -35,16 +41,18 @@ export default function ListBooks() {
         })
     }
 
-    useEffect(() => {
-        getBooks()
-    }, [])
+    useEffect(() => { getBooks() }, [])
 
     const deleteBook = async idBook => {
-       await db.collection('books').doc(idBook).delete()
-       toast('Book deleted', {
-           type: 'error',
-           autoClose: 2000
-       })
+        try {   
+            await db.collection('books').doc(idBook).delete()
+            toast('Book deleted', {
+                type: 'error',
+                autoClose: 2000
+            })           
+        } catch (error) {
+           console.log(error)
+        }
     }
 
     return (
@@ -55,18 +63,22 @@ export default function ListBooks() {
 
             {
                 listBooks.map( book => (
-                    <div className="card" key={book.id}>
+                    <div className="card my-4" key={book.id}>
                         <div className="card-body">
                             <h2>{book.name}</h2>
                             <p>{book.author}</p>
                             <small>{book.isbn}</small>
                             <br/>
-                            <button className="btn btn-danger" onClick={() => deleteBook(book.id) }>
-                                Delete
-                            </button>
-                            <button className="btn btn-warning" onClick={() => setId(book.id)} >
-                                Edit
-                            </button>
+                            <div className="d-flex justify-content-between mt-3">
+                                <button className="btn btn-warning" onClick={() => setId(book.id)} >
+                                    Edit
+                                </button>
+
+                                <button className="btn btn-danger" onClick={() => deleteBook(book.id) }>
+                                    Delete
+                                </button>
+                                
+                            </div>
                         </div>
                     </div>
 
